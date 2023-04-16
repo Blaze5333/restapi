@@ -183,7 +183,13 @@ router.get("/me/member",login_auth,(req,res)=>{
         user_id=result.id
     })
     
-    member.find({user:user_id}).populate('communities').then((data)=>{
+ member.find({user:user_id}).populate({
+        path:"communities",
+        populate:{
+            path:"owners",
+            model:"User"
+        }
+    }).then((data)=>{
         const total=data.length
         res.json({
             "status":true,
@@ -195,27 +201,18 @@ router.get("/me/member",login_auth,(req,res)=>{
                 },
                 "data":data.map((elem)=>{
                     let full_data;
-                    community.find({id:elem.communities[0].id}).populate("owners").then((data1)=>{
-                        console.log(data1[0].name)
-                        
-                        full_data={
-                            "id":data1[0].id,
-                            "name":data1[0].name,
-                            "slug":data1[0].slug,
+                     full_data={
+                            "id":elem.id,
+                            "name":elem.communities[0].name,
+                            "slug":elem.communities[0].slug,
                             "owner":{
-                                "id":data1[0].owners[0].id,
-                                "name":data1[0].owners[0].name
+                                "id":elem.communities[0].owners[0].id,
+                                "name":elem.communities[0].owners[0].name
                             },
-                            "created_at":data1[0].created_at,
-                            "updated_at":data1[0].updated_at
+                            "created_at":elem.created_at,
+                            "updated_at":elem.updated_at
                         }
-                        
-                        
-                    })
-                  
-                    return(
-                        full_data
-                       )
+                    return(full_data)
                 })
             }
         })

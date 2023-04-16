@@ -44,7 +44,7 @@ router.post('/',(req,res)=>{
                 "meta":{
                     "total":total,
                     "pages":Math.ceil(total/perPage),
-                    "page":+page
+                    "page":page
                 },
                 "data":data.map((elem)=>{
                     return(
